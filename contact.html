@@ -1,0 +1,26 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>تواصل معنا - أنماط المراقبة الأمنية</title><link rel="stylesheet" href="/static/css/style.css"></head><body>
+<header class="header"><h1>تواصل معنا</h1><div class="nav"><a class="btn" href="/">الرئيسية</a><a class="btn" href="/products">المنتجات</a><a class="btn" href="/services">الخدمات</a></div></header>
+<div class="container">
+  <h3>وسائل التواصل</h3>
+  <div id="contactCard" class="card"><p class="small">تحميل بيانات التواصل...</p></div>
+</div>
+<footer class="footer">© أنماط المراقبة الأمنية</footer>
+<script>
+async function loadContact(){
+  const res = await fetch('/api/contact');
+  const obj = await res.json();
+  const cont = document.getElementById('contactCard');
+  cont.innerHTML = '';
+  const phone = obj.phone || '';
+  if(phone){
+    cont.innerHTML = `<h4>رقم الهاتف / واتساب</h4><p class="small">${phone}</p>`;
+  } else {
+    cont.innerHTML = `<h4>رقم الهاتف غير مُضاف حالياً</h4><p class="small">يمكن إضافة الرقم من لوحة التحكم.</p>`;
+  }
+}
+loadContact();
+</script>
+</body></html>

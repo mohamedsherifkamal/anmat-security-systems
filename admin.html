@@ -1,0 +1,55 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة التحكم - أنماط المراقبة الأمنية</title><link rel="stylesheet" href="/static/css/style.css"></head><body>
+<header class="header"><h1>لوحة التحكم</h1></header>
+<div class="container">
+  <h3>تسجيل الدخول</h3>
+  <div class="card">
+    <div class="contact-field"><input id="pwd" placeholder="أدخل كلمة المرور"></div>
+    <button class="save-btn" onclick="login()">دخول</button>
+    <p class="small">كلمة مرور افتراضية: 1234</p>
+  </div>
+  <div id="panel" style="display:none;margin-top:12px">
+    <h3>المنتجات</h3>
+    <div id="prodList"></div>
+    <button class="save-btn" onclick="addProduct()">إضافة منتج جديد</button>
+    <h3 style="margin-top:12px">الخدمات</h3>
+    <div id="servList"></div>
+    <button class="save-btn" onclick="addService()">إضافة خدمة جديدة</button>
+    <h3 style="margin-top:12px">التواصل</h3>\n    <div class="card">\n      <label>رقم التواصل / واتساب</label>\n      <input id="contactPhone" value="" placeholder="أدخل رقم الهاتف هنا">\n    </div>\n    <h3 style="margin-top:12px">حفظ</h3>
+    <button class="save-btn" onclick="saveAll()">حفظ التعديلات</button>
+  </div>
+</div>
+<script>
+async function login(){
+  const pwd = document.getElementById('pwd').value;
+  if(pwd==='1234'){ document.getElementById('panel').style.display='block'; loadData(); } else alert('كلمة مرور خاطئة');
+}
+async function loadData(){
+  const pr = await fetch('/api/products').then(r=>r.json());\n  const ct = await fetch('/api/contact').then(r=>r.json()).catch(()=>({phone:''}));\n  document.getElementById('contactPhone').value = ct.phone || '';
+  const sr = await fetch('/api/services').then(r=>r.json());
+  window.products = pr; window.services = sr;
+  renderLists();
+}
+function renderLists(){
+  const prod = document.getElementById('prodList'); prod.innerHTML='';
+  products.forEach((p,i)=>{
+    const div = document.createElement('div'); div.className='card';
+    div.innerHTML=`<input value="${p.name}" onchange="products[${i}].name=this.value"><input value="${p.price}" onchange="products[${i}].price=this.value"><input value="${p.img}" onchange="products[${i}].img=this.value"><textarea onchange="products[${i}].desc=this.value">${p.desc}</textarea><button onclick="delProd(${i})" class="save-btn" style="background:#c0392b;margin-top:6px">حذف</button>`;
+    prod.appendChild(div);
+  });
+  const serv = document.getElementById('servList'); serv.innerHTML='';
+  services.forEach((s,i)=>{ const div=document.createElement('div'); div.className='card'; div.innerHTML=`<input value="${s.title}" onchange="services[${i}].title=this.value"><textarea onchange="services[${i}].desc=this.value">${s.desc}</textarea><button onclick="delServ(${i})" class="save-btn" style="background:#c0392b;margin-top:6px">حذف</button>`; serv.appendChild(div); });
+}
+function addProduct(){ products.push({id:Date.now(),name:'منتج جديد',price:'0',desc:'وصف المنتج',img:'static/img/placeholder.jpg'}); renderLists(); }
+function addService(){ services.push({id:Date.now(),title:'خدمة جديدة',desc:'وصف الخدمة'}); renderLists(); }
+function delProd(i){ products.splice(i,1); renderLists(); }
+function delServ(i){ services.splice(i,1); renderLists(); }
+async function saveAll(){
+  const body = {pwd:'1234',products:products,services:services,contact:{phone:document.getElementById('contactPhone').value}};
+  const res = await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const txt = await res.text();
+  alert(txt);
+}
+</script></body></html>

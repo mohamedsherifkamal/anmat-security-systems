@@ -1,0 +1,18 @@
+
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الخدمات - أنماط المراقبة الأمنية</title>
+<link rel="stylesheet" href="/static/css/style.css"></head><body>
+<header class="header"><h1>الخدمات</h1><div class="nav"><a class="btn" href="/">الرئيسية</a><a class="btn" href="/products">المنتجات</a><a class="btn" href="/contact">تواصل معنا</a></div></header>
+<div class="container"><div id="services" class="grid"></div></div>
+<footer class="footer">© أنماط المراقبة الأمنية</footer>
+<script>
+async function loadServices(){
+  const res = await fetch('/api/services');
+  const list = await res.json();
+  const cont = document.getElementById('services');
+  cont.innerHTML='';
+  list.forEach(s=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<h3>${s.title}</h3><p class='small'>${s.desc}</p>`; cont.appendChild(card); });
+}
+loadServices();
+</script></body></html>
